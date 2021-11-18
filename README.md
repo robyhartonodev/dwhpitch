@@ -2,6 +2,11 @@
 
 This repository contains the pitch(es) for the Datenwarehouse module.
 
+# How to run 
+
+- Install ``python`` 3.9+ and ``pip``. Then run ``pip install -r requirements.txt``
+- Or install ``conda`` and create a new virtual environment. Then run ``pip install -r requirements.txt``
+
 # Directory structure
 
 - ``html`` - where the raw html data are being stored.
