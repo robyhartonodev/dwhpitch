@@ -1,1 +1,11 @@
+# IDE file
 .vscode
+
+# Python cache file
+__pycache__/
+
+# Where saved html for each site stored (raw data)
+html/
+
+# Development database
+db.sqlite3
