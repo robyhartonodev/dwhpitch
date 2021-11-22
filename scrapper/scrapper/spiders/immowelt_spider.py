@@ -17,7 +17,6 @@ class ImmoweltSpider(scrapy.Spider):
         house_types = [
             'haeuser',
             'wohnungen',
-            # 'wg'
         ]
 
         acquisition_types = [
