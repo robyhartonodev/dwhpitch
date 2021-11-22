@@ -3,57 +3,105 @@ import scrapy
 from datetime import datetime
 import os
 
+import re
+import json
+
 class ImmoweltSpider(scrapy.Spider):
     name = "immowelt"
+
     start_urls = [
-        'https://immowelt.de/liste/bl-bayern/wohnungen/mieten',
+        'https://immowelt.de/',
     ]
-
-    house_types = [
-        'haeuser',
-        'wohnungen',
-        'wg'
-    ]
-
-    acquisition_types = [
-        'kaufen',
-        'mieten'
-    ]
-
-    states = [
-        'baden-wuerttemberg',
-        'bayern',
-        'berlin',
-        'brandenburg',
-        'bremen',
-        'hamburg',
-        'hessen',
-        'mecklenburg-vorpommern',
-        'niedersachsen',
-        'nordrhein-westfalen',
-        'rheinland-pfalz',
-        'saarland',
-        'sachsen',
-        'sachsen-anhalt',
-        'schleswig-holstein',
-        'thueringen'
-    ]
-
-    for state in states:
-        url_string = f"https://www.immowelt.de/liste/bl-{state}/wohnungen/mieten"
-        start_urls.append(url_string)
 
     def parse(self, response):
+        house_types = [
+            'haeuser',
+            'wohnungen',
+            # 'wg'
+        ]
+
+        acquisition_types = [
+            'mieten',
+            'kaufen',
+        ]
+
+        states = [
+            # 'baden-wuerttemberg',
+            # 'bayern',
+            # 'berlin',
+            # 'brandenburg',
+            # 'bremen',
+            # 'hamburg',
+            # 'hessen',
+            'mecklenburg-vorpommern',
+            # 'niedersachsen',
+            # 'nordrhein-westfalen',
+            # 'rheinland-pfalz',
+            # 'saarland',
+            # 'sachsen',
+            # 'sachsen-anhalt',
+            # 'schleswig-holstein',
+            # 'thueringen'
+        ]
+
+        # Format: day month year - hour minute second
         # Example format will be 22112021-110500
-        current_time = datetime.today().strftime('-%d%m%Y-%H%M%S')
+        current_time = datetime.today().strftime('%d%m%Y-%H%M%S')
 
-        htmlPath = 'html/immowelt/'
+        for state in states:
+            for house in house_types:
+                for acquistion in acquisition_types:
+                    # e.g. https://www.immowelt.de/liste/bl-mecklenburg-vorpommern/wohnungen/mieten
+                    url_string = f"https://www.immowelt.de/liste/bl-{state}/{house}/{acquistion}"
 
-        fileName = response.url.split('/')[-3] + current_time + '.html'
-        filePath = htmlPath + fileName
+                    meta_payload = {
+                        'state_name': state,
+                        'current_time': current_time,
+                        'url_name': url_string,
+                        'house_type': house,
+                        'acquisition_type': acquistion
+                    }
+
+                    yield scrapy.Request(url_string, callback=self.parse_bundesland, meta=meta_payload)
+
+    # State (Bundesland) parsing callback
+    def parse_bundesland(self, response):
+        # Get meta data
+        meta_payload = response.meta
+
+        # Use Python regex to extract pagination information
+        pagination_string = re.search("\"pagination\"[ :]+((?=\[)\[[^]]*\]|(?=\{)\{[^\}]*\}|\"[^\"]*\")", response.text)
+        pagination_json   = json.loads(pagination_string.group(1))
+        pagination_count  = int(pagination_json["pagesCount"])
+
+        for x in range(pagination_count):
+            page_number = x + 1
+
+            meta_payload['page_number'] = page_number
+
+            # Append query parameter and page number to the request url
+            url = meta_payload.get('url_name') + f"?d=true&sd=DESC&sf=RELEVANCE&sp={page_number}"
+
+            yield scrapy.Request(url, callback=self.parse_final, meta=meta_payload)
+
+
+    # State pagination handling callback (final)
+    def parse_final(self, response):
+        # Get meta data
+        state_name= response.meta.get('state_name')
+        current_time= response.meta.get('current_time')
+        page_number= response.meta.get('page_number')
+        house_type= response.meta.get('house_type')
+        acquisition_type= response.meta.get('acquisition_type')
 
         # Check if the directory is already created or not
-        os.makedirs(os.path.dirname(filePath), exist_ok=True)
+        htmlPath = f"html/immowelt/{state_name}/{house_type}/{acquisition_type}/{current_time}/"
 
+        # Make sure the directory is exist
+        os.makedirs(os.path.dirname(htmlPath), exist_ok=True)
+
+        fileName = f"page-{page_number}.html"
+        filePath = htmlPath + fileName
+        
         with open(filePath, 'wb') as f:
             f.write(response.body)
