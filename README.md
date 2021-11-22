@@ -10,6 +10,8 @@ This repository contains the pitch(es) for the Datenwarehouse module.
 # Directory structure
 
 - ``html`` - where the raw html data are being stored.
+- ``scrapper`` - is a scrappy project for web scrapping process.
+- ``immobilien`` - is a django startproject application. Where models and migrations being defined.
 
 # Why Django?
 
