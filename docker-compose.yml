@@ -1,0 +1,17 @@
+version: '3.1'
+
+services:
+  db:
+    image: postgres
+    restart: always
+    ports:
+      - "127.0.0.1:5431:5432"
+    environment:
+      POSTGRES_PASSWORD: dwh_password
+      POSTGRES_USER: dwh_user
+      POSTGRES_DB: dwh_immobilien_db
+    volumes:
+      - dwh-data:/var/lib/postgresql/data
+
+volumes:
+  dwh-data:

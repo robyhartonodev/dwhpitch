@@ -3,10 +3,7 @@ import scrapy
 from datetime import datetime
 import os
 
-import re
-import json
-
-class ImmoscoutSpider(scrapy.Spider):
+class ImmonetSpider(scrapy.Spider):
     name = "immonet"
 
     start_urls = [
