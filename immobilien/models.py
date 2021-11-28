@@ -1,5 +1,4 @@
 from django.db import models
-from django.db.models.fields import CharField
 
 # Create your models here.
 class Source(models.Model):
@@ -18,29 +17,41 @@ class AcquisitionType(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
-class Country(models.Model):
-    name=models.CharField(max_length=255, unique=True, default='Germany')
-    code=models.CharField(max_length=255, unique=True, default='de')
+class State(models.Model):
+    name=models.CharField(max_length=255, unique=True)
+    state_code=models.CharField(max_length=10)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+class City(models.Model):
+    name=models.CharField(max_length=255, unique=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
 class Zip(models.Model):
-    number=models.IntegerField()
-    country=models.ForeignKey(Country, on_delete=models.CASCADE)
+    code=models.CharField(max_length=8)
+    city=models.ForeignKey(City, on_delete=models.CASCADE)
+    state=models.ForeignKey(State, on_delete=models.CASCADE)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
 class Address(models.Model):
     street_name=models.CharField(max_length=255)
-    street_details=models.CharField(max_length=255)
+    street_details=models.CharField(max_length=255, blank=True, null=True)
     zip=models.ForeignKey(Zip, on_delete=models.CASCADE)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
 class PropertyDetail(models.Model):
+    title=models.CharField(max_length=255, default='default')
     description=models.TextField(default='description')
+    other=models.TextField(default='other')
     address=models.ForeignKey(Address, on_delete=models.CASCADE)
     details_url=models.URLField(blank=True, null=True)
+    price=models.JSONField(blank=True, null=True)
+    size_and_condition=models.JSONField(blank=True, null=True)
+    energy=models.JSONField(blank=True, null=True)
+    features=models.JSONField(blank=True, null=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
