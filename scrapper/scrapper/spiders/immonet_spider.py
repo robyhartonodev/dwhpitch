@@ -3,6 +3,8 @@ import scrapy
 from datetime import datetime
 import os
 
+from immobilien.models import *
+
 class ImmonetSpider(scrapy.Spider):
     name = "immonet"
 
@@ -44,21 +46,138 @@ class ImmonetSpider(scrapy.Spider):
         # Example format will be 22112021-110500
         current_time = datetime.today().strftime('%d%m%Y-%H%M%S')
 
-        for state in states:
-            for house in house_types:
-                for acquistion in acquisition_types:
-                    # e.g. https://www.immonet.de/immobiliensuche/sel.do?&sortby=0&suchart=1&objecttype=1&marketingtype=1&parentcat=1&federalstate=13
-                    url_string = f"https://www.immonet.de/immobiliensuche/sel.do?&sortby=0&suchart=1&objecttype=1&marketingtype={acquistion}&parentcat={house}&federalstate={state}"
+        # Debug detail parsing
+        # url_string = 'https://www.immonet.de/immobiliensuche/sel.do?&sortby=0&suchart=1&objecttype=1&marketingtype=1&parentcat=1&federalstate=13'
+        url_string = 'https://www.immonet.de/angebot/44247305'
 
-                    meta_payload = {
-                        'state_name': state,
-                        'current_time': current_time,
-                        'url_name': url_string,
-                        'house_type': house,
-                        'acquisition_type': acquistion
-                    }
+        yield scrapy.Request(url_string, self.parse_detail_data)
 
-                    yield scrapy.Request(url_string, callback=self.parse_bundesland, meta=meta_payload)
+        # for state in states:
+        #     for house in house_types:
+        #         for acquistion in acquisition_types:
+        #             # e.g. https://www.immonet.de/immobiliensuche/sel.do?&sortby=0&suchart=1&objecttype=1&marketingtype=1&parentcat=1&federalstate=13
+        #             url_string = f"https://www.immonet.de/immobiliensuche/sel.do?&sortby=0&suchart=1&objecttype=1&marketingtype={acquistion}&parentcat={house}&federalstate={state}"
+
+        #             meta_payload = {
+        #                 'state_name': state,
+        #                 'current_time': current_time,
+        #                 'url_name': url_string,
+        #                 'house_type': house,
+        #                 'acquisition_type': acquistion
+        #             }
+
+        #             yield scrapy.Request(url_string, callback=self.parse_bundesland, meta=meta_payload)
+
+    def parse_detail_data(self, response):
+        # Get data from html response text
+        # To check if string empty bool(string.strip())
+        htmlTitle = response.xpath('//h1[@id="expose-headline"]/text()').get()
+        htmlDescription = response.xpath('//p[@id="objectDescription"]/text()').get()
+        htmlOther = response.xpath('//p[@id="otherDescription"]/text()').get()
+        htmlProviderName = response.xpath('//span[@id="bdBrokerFirmname"]/text()').get()
+        htmlTelephoneNumber = response.xpath('normalize-space(//p[@id="bdContactPhone"])').get()
+
+        htmlRoomCount = response.xpath('normalize-space(//span[@id="kfroomsValue"])').get()
+        htmlPriceShow = response.xpath('normalize-space(//span[@id="kfpriceValue"])').get()
+        htmlSizeInSquareMeter = response.xpath('normalize-space(//span[@id="kffirstareaValue"])').get()
+
+        htmlPlz = response.xpath('normalize-space(//p[contains(@class,"text-100 pull-left")])').get()
+        
+        splitTelephoneNumber = htmlTelephoneNumber.split(': ')[1]
+        splitPlz = htmlPlz.split(' ')
+
+        plzCode = splitPlz[0][:5]
+        plzName = splitPlz[1]
+
+        # Find state object (ignore case)
+        states = State.objects.filter(name__iexact='mecklenburg-vorpommern')
+        detailState = states.first() if states.exists() else State.objects.create(name='mecklenburg-vorpommern')
+
+        # Find zip object with place name and plz code
+        zips = Zip.objects.filter(name__iexact=plzName, code=plzCode, state=detailState)
+        detailZip = zips.first() if zips.exists() else Zip.objects.create(name=plzName, code=plzCode, state=detailState)
+
+        # Get or create address object for property detail
+        # TODO update details properly
+        detailAddress, _ = Address.objects.get_or_create(zip=detailZip)
+
+        # Get or create vendor object for property detail
+        detailVendor, _ = PropertyVendor.objects.get_or_create(name=htmlProviderName)
+
+        detailVendor.telephone_number=splitTelephoneNumber
+        detailVendor.save()
+
+        propertyDetail, _ = PropertyDetail.objects.get_or_create(details_url='https://www.immonet.de/angebot/44247305', vendor=detailVendor, address=detailAddress)
+
+        # Update property detail if necessary
+        # TODO update details properly
+        propertyDetail.title=htmlTitle
+        propertyDetail.other=htmlOther
+        propertyDetail.description=htmlDescription
+        
+        if htmlRoomCount:
+            detailRoomCount = float(htmlRoomCount)
+            propertyDetail.room_count=detailRoomCount
+        
+        if htmlSizeInSquareMeter:
+            detailSizeInSquareMeter = float(htmlSizeInSquareMeter[:-2]) # Remove m^2 char before type casting
+            propertyDetail.size_in_meter_square=detailSizeInSquareMeter
+
+        if htmlPriceShow:
+            detailPriceShow = float(htmlPriceShow[:-2].replace(',', '')) # Remove euro sign, remove comma
+            propertyDetail.price_show=detailPriceShow
+
+        propertyDetail.save()
+
+        # # Acquisition Type
+        # propertyAcquisitionType, _ = PropertyAcquisitionType.objects.get_or_create(name='buy')
+
+        # # Property Type
+        # propertyType, _ = PropertyType.objects.get_or_create(name='house')
+
+        # # Identifier
+        # source, _=Source.objects.get_or_create(name='immonet')    
+        # propertyIdentifier, _ = PropertyIdentifier.objects.get_or_create(identifier='44247305', source=source)
+
+
+        # # Property final object
+        # property = Property.objects.get_or_create(
+        #     property_identifier=propertyIdentifier, 
+        #     property_detail=propertyDetail,
+        #     property_type=propertyType,
+        #     propertyAcquisitionType=propertyAcquisitionType
+        # )
+
+    def parse_detail_test(self, response):
+        base_url = "https://immonet.de"
+
+        # Get all detail links from the page
+        detail_links = response.xpath('//a[contains(@class, "block ellipsis text-225 text-default")]/@href').getall()
+
+        for link in detail_links:
+            url_string=f"{base_url}{link}"
+
+            split_url=link.split("/")[-1]
+
+            payload = {'angebotid': split_url}
+
+            # Go into all the detail links
+            yield scrapy.Request(url_string, callback=self.parse_help, meta=payload)
+
+    def parse_help(self, response):
+        angebotId = response.meta.get('angebotid')
+
+        # Check if the directory is already created or not
+        htmlPath = f"html/immonet/detail/"
+
+        # Make sure the directory is exist
+        os.makedirs(os.path.dirname(htmlPath), exist_ok=True)
+
+        fileName = f"angebot-{angebotId}.html"
+        filePath = htmlPath + fileName
+        
+        with open(filePath, 'wb') as f:
+            f.write(response.body)
 
     # State (Bundesland) parsing callback
     def parse_bundesland(self, response):

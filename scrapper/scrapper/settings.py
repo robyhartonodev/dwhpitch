@@ -86,3 +86,15 @@ AUTOTHROTTLE_TARGET_CONCURRENCY = 1.0
 #HTTPCACHE_DIR = 'httpcache'
 #HTTPCACHE_IGNORE_HTTP_CODES = []
 #HTTPCACHE_STORAGE = 'scrapy.extensions.httpcache.FilesystemCacheStorage'
+
+
+# To use django models inside scrapper spiders
+# See https://stackoverflow.com/questions/66721317/no-module-named-django-when-trying-to-import-django-into-scrapy
+import sys
+import os
+
+sys.path.append(os.path.dirname(os.path.abspath('.')))
+os.environ['DJANGO_SETTINGS_MODULE'] = 'dwhpitch.settings'
+
+import django
+django.setup()
