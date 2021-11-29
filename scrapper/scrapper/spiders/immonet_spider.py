@@ -47,27 +47,27 @@ class ImmonetSpider(scrapy.Spider):
         current_time = datetime.today().strftime('%d%m%Y-%H%M%S')
 
         # Debug detail parsing
-        # url_string = 'https://www.immonet.de/immobiliensuche/sel.do?&sortby=0&suchart=1&objecttype=1&marketingtype=1&parentcat=1&federalstate=13&page=2'
-        # yield scrapy.Request(url_string, self.parse_detail_url)
+        url_string = 'https://www.immonet.de/immobiliensuche/sel.do?&sortby=0&suchart=1&objecttype=1&marketingtype=1&parentcat=1&federalstate=4'
+        yield scrapy.Request(url_string, self.parse_detail_url)
 
         # url_string = 'https://www.immonet.de/angebot/45891041'
         # yield scrapy.Request(url_string, self.parse_detail_data)
 
-        for state in states:
-            for house in house_types:
-                for acquistion in acquisition_types:
-                    # e.g. https://www.immonet.de/immobiliensuche/sel.do?&sortby=0&suchart=1&objecttype=1&marketingtype=1&parentcat=1&federalstate=13
-                    url_string = f"https://www.immonet.de/immobiliensuche/sel.do?&sortby=0&suchart=1&objecttype=1&marketingtype={acquistion}&parentcat={house}&federalstate={state}"
+        # for state in states:
+        #     for house in house_types:
+        #         for acquistion in acquisition_types:
+        #             # e.g. https://www.immonet.de/immobiliensuche/sel.do?&sortby=0&suchart=1&objecttype=1&marketingtype=1&parentcat=1&federalstate=13
+        #             url_string = f"https://www.immonet.de/immobiliensuche/sel.do?&sortby=0&suchart=1&objecttype=1&marketingtype={acquistion}&parentcat={house}&federalstate={state}"
 
-                    meta_payload = {
-                        'state_name': state,
-                        'current_time': current_time,
-                        'url_name': url_string,
-                        'house_type': house,
-                        'acquisition_type': acquistion
-                    }
+        #             meta_payload = {
+        #                 'state_name': state,
+        #                 'current_time': current_time,
+        #                 'url_name': url_string,
+        #                 'house_type': house,
+        #                 'acquisition_type': acquistion
+        #             }
 
-                    yield scrapy.Request(url_string, callback=self.parse_bundesland, meta=meta_payload)
+        #             yield scrapy.Request(url_string, callback=self.parse_bundesland, meta=meta_payload)
 
     # State (Bundesland) parsing callback
     def parse_bundesland(self, response):
@@ -123,7 +123,8 @@ class ImmonetSpider(scrapy.Spider):
 
         houseType= response.meta.get('house_type')
         acquisitionType= response.meta.get('acquisition_type')
-        stateName = self.get_state_name(int(response.meta.get('state_name')))
+        # stateName = self.get_state_name(int(response.meta.get('state_name')))
+        stateName = 'bremen'
 
         houseType = 'house' if houseType == 2 else 'flat'
         acquisitionType = 'buy' if acquisitionType == 1 else 'rent'
@@ -166,11 +167,13 @@ class ImmonetSpider(scrapy.Spider):
         detailZip = zips.first() if zips.exists() else Zip.objects.create(name=plzName, code=plzCode, state=detailState)
 
         # Get or create address object for property detail
-        # TODO update address properly
         detailAddress, _ = Address.objects.get_or_create(zip=detailZip)
 
         if splitPlz:
             streetName = ''.join(str(x) for x in splitPlz)
+            detailAddress.street_name=streetName
+
+        detailAddress.save()
 
         # Get or create vendor object for property detail
         detailVendor, _ = PropertyVendor.objects.get_or_create(name=htmlProviderName)
