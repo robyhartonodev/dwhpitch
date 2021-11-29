@@ -45,7 +45,7 @@ class Address(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
 
 class PropertyVendor(models.Model):
-    name=models.CharField(max_length=255, unique=True)
+    name=models.CharField(max_length=255, default="default", blank=True, null=True)
     telephone_number=models.CharField(max_length=255, default="default", blank=True, null=True)
     mobile_number=models.CharField(max_length=255, default="default", blank=True, null=True)
     email=models.EmailField(blank=True, null=True, default="default@mail.com")
@@ -58,9 +58,9 @@ class PropertyFeature(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
 
 class PropertyDetail(models.Model):
-    title=models.CharField(max_length=255, default='default')
-    description=models.TextField(default='default')
-    other=models.TextField(default='default')
+    title=models.CharField(max_length=255, default='default', blank=True, null=True)
+    description=models.TextField(default='default', blank=True, null=True)
+    other=models.TextField(default='default', blank=True, null=True)
     address=models.ForeignKey(Address, on_delete=models.CASCADE)
     details_url=models.URLField(blank=True, null=True)
     room_count=models.FloatField(blank=True, null=True, default=1.0)

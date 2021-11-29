@@ -47,10 +47,11 @@ class ImmonetSpider(scrapy.Spider):
         current_time = datetime.today().strftime('%d%m%Y-%H%M%S')
 
         # Debug detail parsing
-        # url_string = 'https://www.immonet.de/immobiliensuche/sel.do?&sortby=0&suchart=1&objecttype=1&marketingtype=1&parentcat=1&federalstate=13'
-        url_string = 'https://www.immonet.de/angebot/44247305'
+        url_string = 'https://www.immonet.de/immobiliensuche/sel.do?&sortby=0&suchart=1&objecttype=1&marketingtype=1&parentcat=1&federalstate=13'
+        # url_string = 'https://www.immonet.de/angebot/44247305'
 
-        yield scrapy.Request(url_string, self.parse_detail_data)
+        yield scrapy.Request(url_string, self.parse_detail_url)
+        # yield scrapy.Request(url_string, self.parse_detail_data)
 
         # for state in states:
         #     for house in house_types:
@@ -68,7 +69,43 @@ class ImmonetSpider(scrapy.Spider):
 
         #             yield scrapy.Request(url_string, callback=self.parse_bundesland, meta=meta_payload)
 
+    def parse_detail_url(self, response):
+        base_url = "https://immonet.de"
+
+        # Get all detail links from the page
+        detail_links = response.xpath('//a[contains(@class, "block ellipsis text-225 text-default")]/@href').getall()
+
+        for link in detail_links:
+            # e.g. https://immonet/angebot/123123
+            url_string=f"{base_url}{link}"
+
+            split_url=link.split("/")[-1]
+
+            payload = {'details_url': url_string, 'angebotid': split_url}
+
+            # Go into all the detail links
+            yield scrapy.Request(url_string, callback=self.parse_detail_data, meta=payload)
+
+    def parse_detail_html(self, response):
+        angebotId = response.meta.get('angebotid')
+
+        # Check if the directory is already created or not
+        htmlPath = f"html/immonet/detail/"
+
+        # Make sure the directory is exist
+        os.makedirs(os.path.dirname(htmlPath), exist_ok=True)
+
+        fileName = f"angebot-{angebotId}.html"
+        filePath = htmlPath + fileName
+        
+        with open(filePath, 'wb') as f:
+            f.write(response.body)
+
     def parse_detail_data(self, response):
+        # Get meta data details url
+        detailUrl = response.meta.get('details_url')
+        detailId  = response.meta.get('angebotid')
+
         # Get data from html response text
         # To check if string empty bool(string.strip())
         htmlTitle = response.xpath('//h1[@id="expose-headline"]/text()').get()
@@ -83,7 +120,6 @@ class ImmonetSpider(scrapy.Spider):
 
         htmlPlz = response.xpath('normalize-space(//p[contains(@class,"text-100 pull-left")])').get()
         
-        splitTelephoneNumber = htmlTelephoneNumber.split(': ')[1]
         splitPlz = htmlPlz.split(' ')
 
         plzCode = splitPlz[0][:5]
@@ -104,13 +140,16 @@ class ImmonetSpider(scrapy.Spider):
         # Get or create vendor object for property detail
         detailVendor, _ = PropertyVendor.objects.get_or_create(name=htmlProviderName)
 
-        detailVendor.telephone_number=splitTelephoneNumber
+        if htmlTelephoneNumber:
+            splitTelephoneNumber = htmlTelephoneNumber.split(': ')[1]
+            detailVendor.telephone_number=splitTelephoneNumber
+
         detailVendor.save()
 
-        propertyDetail, _ = PropertyDetail.objects.get_or_create(details_url='https://www.immonet.de/angebot/44247305', vendor=detailVendor, address=detailAddress)
+        # Get or create property detail object
+        propertyDetail, _ = PropertyDetail.objects.get_or_create(details_url=detailUrl, vendor=detailVendor, address=detailAddress)
 
         # Update property detail if necessary
-        # TODO update details properly
         propertyDetail.title=htmlTitle
         propertyDetail.other=htmlOther
         propertyDetail.description=htmlDescription
@@ -129,55 +168,23 @@ class ImmonetSpider(scrapy.Spider):
 
         propertyDetail.save()
 
-        # # Acquisition Type
-        # propertyAcquisitionType, _ = PropertyAcquisitionType.objects.get_or_create(name='buy')
+        # Acquisition Type
+        propertyAcquisitionType, _ = PropertyAcquisitionType.objects.get_or_create(name='buy')
 
-        # # Property Type
-        # propertyType, _ = PropertyType.objects.get_or_create(name='house')
+        # Property Type
+        propertyType, _ = PropertyType.objects.get_or_create(name='house')
 
-        # # Identifier
-        # source, _=Source.objects.get_or_create(name='immonet')    
-        # propertyIdentifier, _ = PropertyIdentifier.objects.get_or_create(identifier='44247305', source=source)
+        # Identifier
+        source, _=Source.objects.get_or_create(name='immonet')  # From immonet site  
+        propertyIdentifier, _ = PropertyIdentifier.objects.get_or_create(identifier=detailId, source=source)
 
-
-        # # Property final object
-        # property = Property.objects.get_or_create(
-        #     property_identifier=propertyIdentifier, 
-        #     property_detail=propertyDetail,
-        #     property_type=propertyType,
-        #     propertyAcquisitionType=propertyAcquisitionType
-        # )
-
-    def parse_detail_test(self, response):
-        base_url = "https://immonet.de"
-
-        # Get all detail links from the page
-        detail_links = response.xpath('//a[contains(@class, "block ellipsis text-225 text-default")]/@href').getall()
-
-        for link in detail_links:
-            url_string=f"{base_url}{link}"
-
-            split_url=link.split("/")[-1]
-
-            payload = {'angebotid': split_url}
-
-            # Go into all the detail links
-            yield scrapy.Request(url_string, callback=self.parse_help, meta=payload)
-
-    def parse_help(self, response):
-        angebotId = response.meta.get('angebotid')
-
-        # Check if the directory is already created or not
-        htmlPath = f"html/immonet/detail/"
-
-        # Make sure the directory is exist
-        os.makedirs(os.path.dirname(htmlPath), exist_ok=True)
-
-        fileName = f"angebot-{angebotId}.html"
-        filePath = htmlPath + fileName
-        
-        with open(filePath, 'wb') as f:
-            f.write(response.body)
+        # Property final object
+        property = Property.objects.get_or_create(
+            property_identifier=propertyIdentifier, 
+            property_detail=propertyDetail,
+            property_type=propertyType,
+            property_acquisition_type=propertyAcquisitionType
+        )
 
     # State (Bundesland) parsing callback
     def parse_bundesland(self, response):
