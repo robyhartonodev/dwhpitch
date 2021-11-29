@@ -216,7 +216,7 @@ class ImmonetSpider(scrapy.Spider):
 
         if htmlImages:
             for image in htmlImages:
-                img, _ = PropertyImage.objects.get_or_create(name=image)
+                img, _ = PropertyImage.objects.get_or_create(image_url=image)
                 propertyDetail.images.add(img)
 
         propertyDetail.save()
