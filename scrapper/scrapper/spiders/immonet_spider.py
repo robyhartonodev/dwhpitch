@@ -47,7 +47,7 @@ class ImmonetSpider(scrapy.Spider):
         current_time = datetime.today().strftime('%d%m%Y-%H%M%S')
 
         # Debug detail parsing
-        url_string = 'https://www.immonet.de/immobiliensuche/sel.do?&sortby=0&suchart=1&objecttype=1&marketingtype=1&parentcat=1&federalstate=4'
+        url_string = 'https://www.immonet.de/immobiliensuche/sel.do?&sortby=0&suchart=1&objecttype=1&marketingtype=1&parentcat=1&federalstate=4&page=2'
         yield scrapy.Request(url_string, self.parse_detail_url)
 
         # url_string = 'https://www.immonet.de/angebot/45891041'
@@ -139,12 +139,11 @@ class ImmonetSpider(scrapy.Spider):
         htmlOther = response.xpath('//p[@id="otherDescription"]/text()').get()
         htmlProviderName = response.xpath('//span[@id="bdBrokerFirmname"]/text()').get()
         htmlTelephoneNumber = response.xpath('normalize-space(//p[@id="bdContactPhone"])').get()
-
         htmlRoomCount = response.xpath('normalize-space(//span[@id="kfroomsValue"])').get()
         htmlPriceShow = response.xpath('normalize-space(//span[@id="kfpriceValue"])').get()
         htmlSizeInSquareMeter = response.xpath('normalize-space(//span[@id="kffirstareaValue"])').get()
-
         htmlFeatures = response.xpath('//span[contains(@class,"block padding-left-21")]/text()').getall()
+        htmlImages = response.xpath('//div[@id="fotorama"]/div/@data-img').getall()
 
         htmlPlz = response.xpath('normalize-space(//p[contains(@class,"text-100 pull-left")])').get()
         
@@ -212,8 +211,13 @@ class ImmonetSpider(scrapy.Spider):
                 detailFeatures.append(test)
 
             for feature in detailFeatures:
-                feature, _ = PropertyFeature.objects.get_or_create(name=feature)
-                propertyDetail.features.add(feature)
+                ftr, _ = PropertyFeature.objects.get_or_create(name=feature)
+                propertyDetail.features.add(ftr)
+
+        if htmlImages:
+            for image in htmlImages:
+                img, _ = PropertyImage.objects.get_or_create(name=image)
+                propertyDetail.images.add(img)
 
         propertyDetail.save()
 

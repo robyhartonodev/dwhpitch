@@ -57,6 +57,11 @@ class PropertyFeature(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
+class PropertyImage(models.Model):
+    image_url=models.URLField()
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
 class PropertyDetail(models.Model):
     title=models.CharField(max_length=255, default='default', blank=True, null=True)
     description=models.TextField(default='default', blank=True, null=True)
@@ -69,6 +74,7 @@ class PropertyDetail(models.Model):
     size_in_meter_square=models.FloatField(blank=True, null=True)
     vendor=models.ForeignKey(PropertyVendor, on_delete=models.CASCADE)
     features=models.ManyToManyField(PropertyFeature, blank=True, through='PropertyDetailFeature')
+    images=models.ManyToManyField(PropertyImage, blank=True, through='PropertyDetailImage')
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
@@ -78,6 +84,14 @@ class PropertyDetailFeature(models.Model):
 
     class Meta:
         unique_together= (('detail', 'feature'))
+
+class PropertyDetailImage(models.Model):
+    detail=models.ForeignKey(PropertyDetail, on_delete=models.CASCADE)
+    image=models.ForeignKey(PropertyImage, on_delete=models.CASCADE)
+
+    class Meta:
+        unique_together= (('detail', 'image'))
+
 class Property(models.Model):
     property_identifier=models.ForeignKey(PropertyIdentifier, on_delete=models.CASCADE)
     property_type=models.ForeignKey(PropertyType, on_delete=models.CASCADE)
