@@ -47,7 +47,7 @@ class ImmonetSpider(scrapy.Spider):
         current_time = datetime.today().strftime('%d%m%Y-%H%M%S')
 
         # Debug detail parsing
-        url_string = 'https://www.immonet.de/immobiliensuche/sel.do?&sortby=0&suchart=1&objecttype=1&marketingtype=1&parentcat=1&federalstate=4&page=2'
+        url_string = 'https://www.immonet.de/immobiliensuche/sel.do?&sortby=0&suchart=1&objecttype=1&marketingtype=1&parentcat=1&federalstate=4&page=1'
         yield scrapy.Request(url_string, self.parse_detail_url)
 
         # url_string = 'https://www.immonet.de/angebot/45891041'
@@ -169,7 +169,7 @@ class ImmonetSpider(scrapy.Spider):
         detailAddress, _ = Address.objects.get_or_create(zip=detailZip)
 
         if splitPlz:
-            streetName = ''.join(str(x) for x in splitPlz)
+            streetName = ' '.join(str(x) for x in splitPlz)
             detailAddress.street_name=streetName
 
         detailAddress.save()
