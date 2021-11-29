@@ -50,7 +50,7 @@ class ImmonetSpider(scrapy.Spider):
         # url_string = 'https://www.immonet.de/immobiliensuche/sel.do?&sortby=0&suchart=1&objecttype=1&marketingtype=1&parentcat=1&federalstate=13&page=2'
         # yield scrapy.Request(url_string, self.parse_detail_url)
 
-        # url_string = 'https://www.immonet.de/angebot/44979756'
+        # url_string = 'https://www.immonet.de/angebot/45891041'
         # yield scrapy.Request(url_string, self.parse_detail_data)
 
         for state in states:
@@ -147,10 +147,15 @@ class ImmonetSpider(scrapy.Spider):
 
         htmlPlz = response.xpath('normalize-space(//p[contains(@class,"text-100 pull-left")])').get()
         
+        # PLZ, Location name extraction
         splitPlz = htmlPlz.split(' ')
 
-        plzCode = splitPlz[0][:5]
-        plzName = splitPlz[1]
+        splitPlz = splitPlz[:-3] # remove "Auf" "Karte" "anzeigen"
+
+        plzCode = splitPlz[-2][:5]
+        plzName = splitPlz[-1]
+
+        splitPlz = splitPlz[:-2] # remove plz code and location name
 
         # Find state object (ignore case)
         states = State.objects.filter(name__iexact=stateName)
@@ -163,6 +168,9 @@ class ImmonetSpider(scrapy.Spider):
         # Get or create address object for property detail
         # TODO update address properly
         detailAddress, _ = Address.objects.get_or_create(zip=detailZip)
+
+        if splitPlz:
+            streetName = ''.join(str(x) for x in splitPlz)
 
         # Get or create vendor object for property detail
         detailVendor, _ = PropertyVendor.objects.get_or_create(name=htmlProviderName)
