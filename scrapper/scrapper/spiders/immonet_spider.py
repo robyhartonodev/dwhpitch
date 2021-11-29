@@ -27,7 +27,7 @@ class ImmonetSpider(scrapy.Spider):
             # 1, # scleswig-holstein
             # 2, # hamburg
             # 3, # niedersachsen
-            # 4, # bremen
+            4, # bremen
             # 5, # nordrheinwestfalen
             # 6, # hessen
             # 7, # rheinland-pfalz
@@ -36,7 +36,7 @@ class ImmonetSpider(scrapy.Spider):
             # 10, # saarland
             # 11, # berlin
             # 12, # brandenburg
-            13, # mecklenburg-vorpommern
+            # 13, # mecklenburg-vorpommern
             # 14, # sachsen
             # 15, # sachsen-anhalt
             # 16, # thueringen
@@ -47,29 +47,57 @@ class ImmonetSpider(scrapy.Spider):
         current_time = datetime.today().strftime('%d%m%Y-%H%M%S')
 
         # Debug detail parsing
-        url_string = 'https://www.immonet.de/immobiliensuche/sel.do?&sortby=0&suchart=1&objecttype=1&marketingtype=1&parentcat=1&federalstate=13'
-        # url_string = 'https://www.immonet.de/angebot/44247305'
+        # url_string = 'https://www.immonet.de/immobiliensuche/sel.do?&sortby=0&suchart=1&objecttype=1&marketingtype=1&parentcat=1&federalstate=13&page=2'
+        # yield scrapy.Request(url_string, self.parse_detail_url)
 
-        yield scrapy.Request(url_string, self.parse_detail_url)
+        # url_string = 'https://www.immonet.de/angebot/44979756'
         # yield scrapy.Request(url_string, self.parse_detail_data)
 
-        # for state in states:
-        #     for house in house_types:
-        #         for acquistion in acquisition_types:
-        #             # e.g. https://www.immonet.de/immobiliensuche/sel.do?&sortby=0&suchart=1&objecttype=1&marketingtype=1&parentcat=1&federalstate=13
-        #             url_string = f"https://www.immonet.de/immobiliensuche/sel.do?&sortby=0&suchart=1&objecttype=1&marketingtype={acquistion}&parentcat={house}&federalstate={state}"
+        for state in states:
+            for house in house_types:
+                for acquistion in acquisition_types:
+                    # e.g. https://www.immonet.de/immobiliensuche/sel.do?&sortby=0&suchart=1&objecttype=1&marketingtype=1&parentcat=1&federalstate=13
+                    url_string = f"https://www.immonet.de/immobiliensuche/sel.do?&sortby=0&suchart=1&objecttype=1&marketingtype={acquistion}&parentcat={house}&federalstate={state}"
 
-        #             meta_payload = {
-        #                 'state_name': state,
-        #                 'current_time': current_time,
-        #                 'url_name': url_string,
-        #                 'house_type': house,
-        #                 'acquisition_type': acquistion
-        #             }
+                    meta_payload = {
+                        'state_name': state,
+                        'current_time': current_time,
+                        'url_name': url_string,
+                        'house_type': house,
+                        'acquisition_type': acquistion
+                    }
 
-        #             yield scrapy.Request(url_string, callback=self.parse_bundesland, meta=meta_payload)
+                    yield scrapy.Request(url_string, callback=self.parse_bundesland, meta=meta_payload)
+
+    # State (Bundesland) parsing callback
+    def parse_bundesland(self, response):
+        # Get meta data
+        meta_payload = response.meta
+
+        # Scrapy response xpath api to extract pagination last number
+        elements = response.xpath('//li[contains(@class, "pagination-item")]/a/text()').getall()
+
+        pagination_count = 1
+
+        # Handle if there is pagination (only 1 page result)
+        if elements:
+            pagination_count = int(elements[-1])
+
+        print(f"page {pagination_count}")
+
+        for x in range(pagination_count):
+            page_number = x + 1
+            meta_payload['page_number'] = page_number
+
+            # Append query parameter and page number to the request url
+            url = meta_payload.get('url_name') + f"&page={page_number}"
+
+            yield scrapy.Request(url, callback=self.parse_detail_url, meta=meta_payload)
 
     def parse_detail_url(self, response):
+        # Get meta data
+        meta_payload = response.meta
+
         base_url = "https://immonet.de"
 
         # Get all detail links from the page
@@ -81,30 +109,27 @@ class ImmonetSpider(scrapy.Spider):
 
             split_url=link.split("/")[-1]
 
-            payload = {'details_url': url_string, 'angebotid': split_url}
+            # Add more payload to meta data
+            meta_payload['details_url'] = url_string
+            meta_payload['angebot_id'] = split_url
 
             # Go into all the detail links
-            yield scrapy.Request(url_string, callback=self.parse_detail_data, meta=payload)
-
-    def parse_detail_html(self, response):
-        angebotId = response.meta.get('angebotid')
-
-        # Check if the directory is already created or not
-        htmlPath = f"html/immonet/detail/"
-
-        # Make sure the directory is exist
-        os.makedirs(os.path.dirname(htmlPath), exist_ok=True)
-
-        fileName = f"angebot-{angebotId}.html"
-        filePath = htmlPath + fileName
-        
-        with open(filePath, 'wb') as f:
-            f.write(response.body)
+            yield scrapy.Request(url_string, callback=self.parse_detail_data, meta=meta_payload)
 
     def parse_detail_data(self, response):
         # Get meta data details url
         detailUrl = response.meta.get('details_url')
-        detailId  = response.meta.get('angebotid')
+        detailId  = response.meta.get('angebot_id')
+
+        houseType= response.meta.get('house_type')
+        acquisitionType= response.meta.get('acquisition_type')
+        stateName = self.get_state_name(int(response.meta.get('state_name')))
+
+        houseType = 'house' if houseType == 2 else 'flat'
+        acquisitionType = 'buy' if acquisitionType == 1 else 'rent'
+
+        if not detailId:
+            detailId = 'dummy'
 
         # Get data from html response text
         # To check if string empty bool(string.strip())
@@ -118,6 +143,8 @@ class ImmonetSpider(scrapy.Spider):
         htmlPriceShow = response.xpath('normalize-space(//span[@id="kfpriceValue"])').get()
         htmlSizeInSquareMeter = response.xpath('normalize-space(//span[@id="kffirstareaValue"])').get()
 
+        htmlFeatures = response.xpath('//span[contains(@class,"block padding-left-21")]/text()').getall()
+
         htmlPlz = response.xpath('normalize-space(//p[contains(@class,"text-100 pull-left")])').get()
         
         splitPlz = htmlPlz.split(' ')
@@ -126,15 +153,15 @@ class ImmonetSpider(scrapy.Spider):
         plzName = splitPlz[1]
 
         # Find state object (ignore case)
-        states = State.objects.filter(name__iexact='mecklenburg-vorpommern')
-        detailState = states.first() if states.exists() else State.objects.create(name='mecklenburg-vorpommern')
+        states = State.objects.filter(name__iexact=stateName)
+        detailState = states.first() if states.exists() else State.objects.create(name=stateName)
 
         # Find zip object with place name and plz code
         zips = Zip.objects.filter(name__iexact=plzName, code=plzCode, state=detailState)
         detailZip = zips.first() if zips.exists() else Zip.objects.create(name=plzName, code=plzCode, state=detailState)
 
         # Get or create address object for property detail
-        # TODO update details properly
+        # TODO update address properly
         detailAddress, _ = Address.objects.get_or_create(zip=detailZip)
 
         # Get or create vendor object for property detail
@@ -166,13 +193,24 @@ class ImmonetSpider(scrapy.Spider):
             detailPriceShow = float(htmlPriceShow[:-2].replace(',', '')) # Remove euro sign, remove comma
             propertyDetail.price_show=detailPriceShow
 
+        if htmlFeatures:
+            detailFeatures = []
+            
+            for feature in htmlFeatures:
+                test = feature.strip()
+                detailFeatures.append(test)
+
+            for feature in detailFeatures:
+                feature, _ = PropertyFeature.objects.get_or_create(name=feature)
+                propertyDetail.features.add(feature)
+
         propertyDetail.save()
 
         # Acquisition Type
-        propertyAcquisitionType, _ = PropertyAcquisitionType.objects.get_or_create(name='buy')
+        propertyAcquisitionType, _ = PropertyAcquisitionType.objects.get_or_create(name=acquisitionType)
 
         # Property Type
-        propertyType, _ = PropertyType.objects.get_or_create(name='house')
+        propertyType, _ = PropertyType.objects.get_or_create(name=houseType)
 
         # Identifier
         source, _=Source.objects.get_or_create(name='immonet')  # From immonet site  
@@ -186,31 +224,20 @@ class ImmonetSpider(scrapy.Spider):
             property_acquisition_type=propertyAcquisitionType
         )
 
-    # State (Bundesland) parsing callback
-    def parse_bundesland(self, response):
-        # Get meta data
-        meta_payload = response.meta
+    def parse_detail_html(self, response):
+        angebotId = response.meta.get('angebotid')
 
-        # Scrapy response xpath api to extract pagination last number
-        elements = response.xpath('//li[contains(@class, "pagination-item")]/a/text()').getall()
+        # Check if the directory is already created or not
+        htmlPath = f"html/immonet/detail/"
 
-        pagination_count = 1
+        # Make sure the directory is exist
+        os.makedirs(os.path.dirname(htmlPath), exist_ok=True)
 
-        # Handle if there is pagination (only 1 page result)
-        if elements:
-            pagination_count = int(elements[-1])
-
-        print(f"page {pagination_count}")
-
-        for x in range(pagination_count):
-            page_number = x + 1
-            meta_payload['page_number'] = page_number
-
-            # Append query parameter and page number to the request url
-            url = meta_payload.get('url_name') + f"&page={page_number}"
-
-            yield scrapy.Request(url, callback=self.parse_final, meta=meta_payload)
-
+        fileName = f"angebot-{angebotId}.html"
+        filePath = htmlPath + fileName
+        
+        with open(filePath, 'wb') as f:
+            f.write(response.body)
 
     # State pagination handling callback (final)
     def parse_final(self, response):
