@@ -67,10 +67,10 @@ class ImmonetSpider(scrapy.Spider):
         #                 'acquisition_type': acquistion
         #             }
 
-        #             yield scrapy.Request(url_string, callback=self.parse_bundesland, meta=meta_payload)
+        #             yield scrapy.Request(url_string, callback=self.parse_pagination, meta=meta_payload)
 
-    # State (Bundesland) parsing callback
-    def parse_bundesland(self, response):
+    # Pagination parsing callback
+    def parse_pagination(self, response):
         # Get meta data
         meta_payload = response.meta
 
@@ -133,7 +133,6 @@ class ImmonetSpider(scrapy.Spider):
             detailId = 'dummy'
 
         # Get data from html response text
-        # To check if string empty bool(string.strip())
         htmlTitle = response.xpath('//h1[@id="expose-headline"]/text()').get()
         htmlDescription = response.xpath('//p[@id="objectDescription"]/text()').get()
         htmlOther = response.xpath('//p[@id="otherDescription"]/text()').get()

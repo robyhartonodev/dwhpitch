@@ -12,6 +12,11 @@ services:
       POSTGRES_DB: dwh_immobilien_db
     volumes:
       - dwh-data:/var/lib/postgresql/data
+  # Handle JS Pre-Rendering issue for site like Immowelt
+  splash:
+    image: scrapinghub/splash
+    ports:
+      - "127.0.0.1:8050:8050"
 
 volumes:
   dwh-data:
