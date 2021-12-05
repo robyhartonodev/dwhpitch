@@ -18,13 +18,13 @@ class ImmoweltSpider(scrapy.Spider):
 
     def parse(self, response):
         house_types = [
-            'haeuser',
+            # 'haeuser',
             'wohnungen',
         ]
 
         acquisition_types = [
             'mieten',
-            'kaufen',
+            # 'kaufen',
         ]
 
         states = [
@@ -32,10 +32,10 @@ class ImmoweltSpider(scrapy.Spider):
             # 'bayern',
             # 'berlin',
             # 'brandenburg',
-            # 'bremen',
+            'bremen',
             # 'hamburg',
             # 'hessen',
-            'mecklenburg-vorpommern',
+            # 'mecklenburg-vorpommern',
             # 'niedersachsen',
             # 'nordrhein-westfalen',
             # 'rheinland-pfalz',
@@ -52,48 +52,35 @@ class ImmoweltSpider(scrapy.Spider):
 
         # Debug details parsing
         # url_string = f"https://www.immowelt.de/liste/bl-hessen/wohnungen/mieten" # test 1
-        url_string = f"https://www.immowelt.de/liste/bl-bremen/wohnungen/kaufen" # test 2
-        yield scrapy.Request(url_string, callback=self.parse_detail_url)
+        # url_string = f"https://immowelt.de/liste/bl-bremen/wohnungen/kaufen" # test 2
+        # yield scrapy.Request(url_string, callback=self.parse_detail_url)
 
         # url_string = f"https://www.immowelt.de/expose/23qlr57"
+        # url_string = "https://www.immowelt.de/expose/239865m"
+        # url_string = "https://www.immowelt.de/expose/23p435f"
         # payload = {
-        #     'details_url': 'https://www.immowelt.de/expose/23qlr57',
-        #     'angebot_id': '23qlr57',
+        #     'details_url': url_string,
+        #     'angebot_id': url_string.split('/')[-1],
         # }
         # yield scrapy_splash.SplashRequest(url_string, self.parse_detail_data, meta=payload, args={
         #     'wait': 2.0
         # })
 
-        # for state in states:
-        #     for house in house_types:
-        #         for acquistion in acquisition_types:
-        #             # e.g. https://www.immowelt.de/liste/bl-mecklenburg-vorpommern/wohnungen/mieten
-        #             url_string = f"https://www.immowelt.de/liste/bl-{state}/{house}/{acquistion}"
+        for state in states:
+            for house in house_types:
+                for acquistion in acquisition_types:
+                    # e.g. https://www.immowelt.de/liste/bl-mecklenburg-vorpommern/wohnungen/mieten
+                    url_string = f"https://www.immowelt.de/liste/bl-{state}/{house}/{acquistion}"
 
-        #             meta_payload = {
-        #                 'state_name': state,
-        #                 'current_time': current_time,
-        #                 'url_name': url_string,
-        #                 'house_type': house,
-        #                 'acquisition_type': acquistion
-        #             }
+                    meta_payload = {
+                        'state_name': state,
+                        'current_time': current_time,
+                        'url_name': url_string,
+                        'house_type': house,
+                        'acquisition_type': acquistion
+                    }
 
-        #             yield scrapy.Request(url_string, callback=self.parse_pagination, meta=meta_payload)
-
-    # def parse_detail_html(self, response):
-    #     angebotId = response.meta.get('angebotid')
-
-    #     # Check if the directory is already created or not
-    #     htmlPath = f"html/immowelt/detail/"
-
-    #     # Make sure the directory is exist
-    #     os.makedirs(os.path.dirname(htmlPath), exist_ok=True)
-
-    #     fileName = f"angebot-{angebotId}.html"
-    #     filePath = htmlPath + fileName
-        
-    #     with open(filePath, 'wb') as f:
-    #         f.write(response.body)
+                    yield scrapy.Request(url_string, callback=self.parse_pagination, meta=meta_payload)
 
     # State (Bundesland) parsing callback
     def parse_pagination(self, response):
@@ -104,18 +91,11 @@ class ImmoweltSpider(scrapy.Spider):
         pagination_string = re.search("\"pagination\"[ :]+((?=\[)\[[^]]*\]|(?=\{)\{[^\}]*\}|\"[^\"]*\")", response.text)
         pagination_json   = json.loads(pagination_string.group(1))
         pagination_count  = int(pagination_json["pagesCount"])
-
+        
         for x in range(pagination_count):
             page_number = x + 1
 
             meta_payload['page_number'] = page_number
-            
-            # Splash config
-            meta_payload['splash'] = {
-                'args': {
-                    'wait': 1
-                }
-            }
 
             # Append query parameter and page number to the request url
             url = meta_payload.get('url_name') + f"?d=true&sd=DESC&sf=RELEVANCE&sp={page_number}"
@@ -124,21 +104,25 @@ class ImmoweltSpider(scrapy.Spider):
             yield scrapy.Request(url, callback=self.parse_detail_url, meta=meta_payload)
     
     def parse_detail_url(self, response):
+        # Get meta data
+        meta_payload = response.meta
+
         detail_links_one = response.xpath('//a[starts-with(@id, "estate_")]/@href').getall()
         detail_links_two = response.xpath('//a[starts-with(@class, "EstatesListItem-")]/@href').getall()
+        detail_links_three = response.xpath('//div[starts-with(@class, "EstateItem-")]/a/@href').getall()
 
         # Concat two array string containing detail url
-        detail_links = detail_links_one + detail_links_two
+        detail_links = detail_links_one + detail_links_two + detail_links_three
+
+        print(detail_links)
 
         for link in detail_links:
             angebotId = link.split('/')[-1]
 
-            payload = {
-                'details_url': link,
-                'angebot_id': angebotId
-            }
+            meta_payload['details_url'] = link
+            meta_payload['angebot_id'] = angebotId
 
-            yield scrapy_splash.SplashRequest(link, self.parse_detail_data, meta=payload, args={
+            yield scrapy_splash.SplashRequest(link, self.parse_detail_data, meta=meta_payload, args={
                 'wait': 2.0
             })
 
@@ -148,10 +132,13 @@ class ImmoweltSpider(scrapy.Spider):
         detailUrl = response.meta.get('details_url')
         detailId  = response.meta.get('angebot_id')
 
-        # TODO Change these dynamically later
-        houseType = 'flat'
-        acquisitionType = 'buy'
-        stateName = 'bremen'
+        houseType= response.meta.get('house_type')
+        acquisitionType= response.meta.get('acquisition_type')
+        stateName = response.meta.get('state_name')
+
+        houseType = 'flat' if houseType == 'wohnungen' else 'house'
+        acquisitionType = 'buy' if acquisitionType == 'kaufen' else 'mieten'
+        # stateName = 'bremen'
 
         if not detailId:
             detailId = 'dummy'
@@ -159,18 +146,28 @@ class ImmoweltSpider(scrapy.Spider):
         # Get data from html response text
         htmlTitle = response.xpath('//meta[@name="og:title"]/@content').get()
         htmlProviderName = response.xpath('//p[@class="offerer"]/text()').get()
-        htmlContactPerson = response.xpath('//p[@class="contactperson"]/text()').get()
+        # htmlContactPerson = response.xpath('//p[@class="contactperson"]/text()').get()
         
         htmlPriceShow = response.xpath('//div[@class="has-font-300"]/strong/text()').get()
         htmlFacts = response.xpath('//span[@class="has-font-300"]/text()').getall()
 
         htmlStreetName = response.xpath('//span[@data-cy="address-street"]/text()').get()
 
-        htmlSizeInSquareMeter=htmlFacts[0][:-3]
+        htmlSizeInSquareMeter=htmlFacts[0][:-3] # Remove m^2 and space
         htmlRoomCount=htmlFacts[1]
 
         htmlFeatures = response.xpath('//div[contains(@class,"textlist textlist--icon card-content ng-star-inserted")]/ul/li/text()').getall()
         htmlImages = response.xpath('//img[contains(@class,"swiper-lazy ng-star-inserted swiper-lazy-loaded")]/@src').getall()
+
+        htmlPriceOne = response.xpath('//sd-cell-col[contains(@class, "cell__col")]/strong/text()').getall()
+        htmlPriceTwo = response.xpath('//sd-card[contains(@class, "price card")]/sd-cell/sd-cell-row/sd-cell-col[contains(@class, "cell__col")]/text()').getall()
+
+        # Kaution (Deposit)
+        htmlDepositText = response.xpath('//div[@data-cy="deposit"]/h3/text()').getall()
+        htmlDepositValue = response.xpath('//div[@data-cy="deposit"]/p/text()').getall()
+
+        # Concat price related string
+        htmlPrices = htmlPriceOne + htmlPriceTwo
 
         htmlPlz = response.xpath('normalize-space(//span[@data-cy="address-city"])').get()
 
@@ -202,16 +199,27 @@ class ImmoweltSpider(scrapy.Spider):
         # propertyDetail.description=htmlDescription
         
         if htmlRoomCount:
-            detailRoomCount = float(htmlRoomCount)
-            propertyDetail.room_count=detailRoomCount
+            containsDigit = any(str.isdigit(c) for c in htmlRoomCount)
+
+            if containsDigit:
+                detailRoomCount = float(htmlRoomCount.replace(',','.')) # Change comma to point
+                propertyDetail.room_count=detailRoomCount
         
         if htmlSizeInSquareMeter:
-            detailSizeInSquareMeter = float(htmlSizeInSquareMeter[:-2].replace(',', '').replace('.', '')) # Remove m^2 char before type casting
-            propertyDetail.size_in_meter_square=detailSizeInSquareMeter
+            containsDigit = any(str.isdigit(c) for c in htmlSizeInSquareMeter)
+
+            if containsDigit:
+                detailSizeInSquareMeter = float(htmlSizeInSquareMeter.replace('.', '').replace(',', '.')) # Change comma separator to point and remove dot thousand separator
+                propertyDetail.size_in_meter_square = detailSizeInSquareMeter
 
         if htmlPriceShow:
-            detailPriceShow = float(htmlPriceShow.replace(u'\xa0', ' ').split(' ')[0].replace('.', ''))
-            propertyDetail.price_show=detailPriceShow
+            containsDigit = any(str.isdigit(c) for c in htmlPriceShow)
+
+            if containsDigit:
+                text = htmlPriceShow[:-2].replace('.', '').replace(',', '.')
+
+                detailPriceShow = float(text)
+                propertyDetail.price_show=detailPriceShow
 
         if htmlFeatures:
             detailFeatures = []
@@ -228,6 +236,37 @@ class ImmoweltSpider(scrapy.Spider):
             for image in htmlImages:
                 img, _ = PropertyImage.objects.get_or_create(image_url=image)
                 propertyDetail.images.add(img)
+
+        if htmlPrices:
+            name = []
+            price = []
+
+            for index, item in enumerate(htmlPrices):
+                if index % 2 == 0:
+                    text = item.strip()
+                    name.append(text)
+                if index % 2 != 0:
+                    containsDigit = any(str.isdigit(c) for c in item)
+
+                    if containsDigit:
+                        val = item[:-2].replace('.','').replace(',','.') # Remove euro sign, \xa0 and convert comma into dot for float
+                        price.append(val)
+                    else:
+                        price.append(item)
+
+            priceDict = dict(zip(name, price))
+
+            for key, value in priceDict.items():
+                
+                containsDigit = any(str.isdigit(c) for c in value)
+
+                if containsDigit:
+                    priceType, _ = PropertyPriceType.objects.get_or_create(name=key)
+                    
+                    property_detail_price, _ = PropertyDetailPrice.objects.get_or_create(detail=propertyDetail, price_type=priceType)
+                    
+                    property_detail_price.value = value
+                    property_detail_price.save()
 
         propertyDetail.save()
 
@@ -266,6 +305,21 @@ class ImmoweltSpider(scrapy.Spider):
         os.makedirs(os.path.dirname(htmlPath), exist_ok=True)
 
         fileName = f"page-{page_number}.html"
+        filePath = htmlPath + fileName
+        
+        with open(filePath, 'wb') as f:
+            f.write(response.body)
+
+    def parse_detail_html(self, response):
+        angebotId = response.meta.get('angebotid')
+
+        # Check if the directory is already created or not
+        htmlPath = f"html/immowelt/detail/"
+
+        # Make sure the directory is exist
+        os.makedirs(os.path.dirname(htmlPath), exist_ok=True)
+
+        fileName = f"angebot-{angebotId}.html"
         filePath = htmlPath + fileName
         
         with open(filePath, 'wb') as f:
