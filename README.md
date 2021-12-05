@@ -4,8 +4,13 @@ This repository contains the pitch(es) for the Datenwarehouse module.
 
 # How to run 
 
+- Install ``docker`` and ``docker-compose``
 - Install ``python`` 3.9+ and ``pip``. Then run ``pip install -r requirements.txt``
 - Or install ``conda`` and create a new virtual environment. Then run ``pip install -r requirements.txt``
+- Create ``.env`` file based on ``.env.example`` file and adjust the variables inside the file.
+- Run ``docker-compose up`` to start the database and splash service.
+- Run ``python manage.py migrate`` to run the migrations.
+- Run ``scrapy crawl <spider_name>`` inside the scrapy project (``scrapper``) accordingly using scheduling service e.g. CronJob.
 
 # Directory structure
 
