@@ -9,3 +9,6 @@ html/
 
 # Development database
 db.sqlite3
+
+# Environment variable
+.env

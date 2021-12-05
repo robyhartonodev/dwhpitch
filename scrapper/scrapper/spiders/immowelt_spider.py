@@ -151,7 +151,7 @@ class ImmoweltSpider(scrapy.Spider):
         # TODO Change these dynamically later
         houseType = 'flat'
         acquisitionType = 'buy'
-        stateName = 'hessen'
+        stateName = 'bremen'
 
         if not detailId:
             detailId = 'dummy'
