@@ -50,7 +50,8 @@ class ImmonetSpider(scrapy.Spider):
         url_string = 'https://www.immonet.de/immobiliensuche/sel.do?&sortby=0&suchart=1&objecttype=1&marketingtype=1&parentcat=1&federalstate=4&page=1'
         yield scrapy.Request(url_string, self.parse_detail_url)
 
-        # url_string = 'https://www.immonet.de/angebot/45891041'
+        # url_string = 'https://www.immonet.de/angebot/45891041' # test 1 (buy)
+        # url_string = 'https://www.immonet.de/angebot/46022645' # test 2 (rent)
         # yield scrapy.Request(url_string, self.parse_detail_data)
 
         # for state in states:
@@ -144,6 +145,9 @@ class ImmonetSpider(scrapy.Spider):
         htmlFeatures = response.xpath('//span[contains(@class,"block padding-left-21")]/text()').getall()
         htmlImages = response.xpath('//div[@id="fotorama"]/div/@data-img').getall()
 
+        htmlPriceTypeNames = response.xpath('//div[starts-with(@id, "pricename_")]/text()').getall()
+        htmlPriceTypeValues = response.xpath('//div[starts-with(@id, "priceid_")]/text()').getall()
+
         htmlPlz = response.xpath('normalize-space(//p[contains(@class,"text-100 pull-left")])').get()
         
         # PLZ, Location name extraction
@@ -217,6 +221,28 @@ class ImmonetSpider(scrapy.Spider):
             for image in htmlImages:
                 img, _ = PropertyImage.objects.get_or_create(image_url=image)
                 propertyDetail.images.add(img)
+
+        if htmlPriceTypeNames and htmlPriceTypeValues:
+            priceTypeNames = []
+            priceTypeValues = []
+
+            for name in htmlPriceTypeNames:
+                nm = name.strip()
+                priceTypeNames.append(nm)
+
+            for val in htmlPriceTypeValues:
+                vl = float(val.strip()[:-2].replace(',','')) # Remove euro sign, \xa0 and comma thousand separator (,)
+                priceTypeValues.append(vl)
+
+            priceDict = dict(zip(priceTypeNames, priceTypeValues))
+
+            for key, value in priceDict.items():
+                priceType, _ = PropertyPriceType.objects.get_or_create(name=key)
+                
+                property_detail_price, _ = PropertyDetailPrice.objects.get_or_create(detail=propertyDetail, price_type=priceType)
+                
+                property_detail_price.value = value
+                property_detail_price.save()
 
         propertyDetail.save()
 

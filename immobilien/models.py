@@ -62,6 +62,11 @@ class PropertyImage(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
+class PropertyPriceType(models.Model):
+    name=models.CharField(max_length=255, unique=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
 class PropertyDetail(models.Model):
     title=models.CharField(max_length=255, default='default', blank=True, null=True)
     description=models.TextField(default='default', blank=True, null=True)
@@ -70,11 +75,11 @@ class PropertyDetail(models.Model):
     details_url=models.URLField(blank=True, null=True)
     room_count=models.FloatField(blank=True, null=True, default=1.0)
     price_show=models.FloatField(blank=True, default=0.0)
-    price_detail=models.JSONField(blank=True, null=True)
     size_in_meter_square=models.FloatField(blank=True, null=True)
     vendor=models.ForeignKey(PropertyVendor, on_delete=models.CASCADE)
     features=models.ManyToManyField(PropertyFeature, blank=True, through='PropertyDetailFeature')
     images=models.ManyToManyField(PropertyImage, blank=True, through='PropertyDetailImage')
+    detail_prices=models.ManyToManyField(PropertyPriceType, blank=True, through='PropertyDetailPrice')
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
@@ -91,6 +96,14 @@ class PropertyDetailImage(models.Model):
 
     class Meta:
         unique_together= (('detail', 'image'))
+
+class PropertyDetailPrice(models.Model):
+    detail=models.ForeignKey(PropertyDetail, on_delete=models.CASCADE)
+    price_type=models.ForeignKey(PropertyPriceType, on_delete=models.CASCADE)
+    value=models.FloatField(blank=True, null=True)
+
+    class Meta:
+        unique_together= (('detail', 'price_type'))
 
 class Property(models.Model):
     property_identifier=models.ForeignKey(PropertyIdentifier, on_delete=models.CASCADE)
