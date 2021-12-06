@@ -27,11 +27,11 @@ class ImmonetSpider(scrapy.Spider):
         ]
 
         states = [
-            # 1, # scleswig-holstein
+            # 1, # schleswig-holstein
             # 2, # hamburg
             # 3, # niedersachsen
             # 4, # bremen
-            # 5, # nordrheinwestfalen
+            # 5, # nordrhein-westfalen
             # 6, # hessen
             # 7, # rheinland-pfalz
             # 8, # baden-wuerttemberg
