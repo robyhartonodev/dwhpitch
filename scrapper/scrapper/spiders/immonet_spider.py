@@ -5,6 +5,9 @@ import os
 
 from immobilien.models import *
 
+# How to run: 
+# scrapy crawl immonet -a bundesland=<state-name> (lower case)
+# e.g. scrapy crawl immonet -a bundesland=bayern
 class ImmonetSpider(scrapy.Spider):
     name = "immonet"
 
@@ -27,7 +30,7 @@ class ImmonetSpider(scrapy.Spider):
             # 1, # scleswig-holstein
             # 2, # hamburg
             # 3, # niedersachsen
-            4, # bremen
+            # 4, # bremen
             # 5, # nordrheinwestfalen
             # 6, # hessen
             # 7, # rheinland-pfalz
@@ -41,6 +44,11 @@ class ImmonetSpider(scrapy.Spider):
             # 15, # sachsen-anhalt
             # 16, # thueringen
         ]
+
+        # If not bundesland argument not null then append it to states array
+        if self.bundesland:
+            state_id = self.get_state_id(self.bundesland)
+            states.append(state_id)
 
         # Format: day month year - hour minute second
         # Example format will be 22112021-110500
@@ -355,5 +363,40 @@ class ImmonetSpider(scrapy.Spider):
             return 'thueringen'
         
         return 'ipsum'
+
+    def get_state_id(self, name):
+        if name == 'schleswig-holstein':
+            return 1
+        if name == 'hamburg':
+            return 2
+        if name == 'niedersachsen':
+            return 3
+        if name == 'bremen':
+            return 4
+        if name == 'nordrhein-westfalen':
+            return 5
+        if name == 'hessen':
+            return 6
+        if name == 'rheinland-pfalz':
+            return 7
+        if name == 'baden-wuerttemberg':
+            return 8
+        if name == 'bayern':
+            return 9
+        if name == 'saarland':
+            return 10
+        if name == 'berlin':
+            return 11
+        if name == 'brandenburg':
+            return 12
+        if name == 'mecklenburg-vorpommern':
+            return 13
+        if name == 'sachsen':
+            return 14
+        if name == 'sachsen-anhalt':
+            return 15
+        if name == 'thueringen':
+            return 16      
+        return 20
 
 

@@ -9,6 +9,9 @@ import json
 
 from immobilien.models import *
 
+# How to run: 
+# scrapy crawl immowelt -a bundesland=<state-name> (lower case)
+# e.g. scrapy crawl immowelt -a bundesland=bayern
 class ImmoweltSpider(scrapy.Spider):
     name = "immowelt"
 
@@ -18,13 +21,13 @@ class ImmoweltSpider(scrapy.Spider):
 
     def parse(self, response):
         house_types = [
-            # 'haeuser',
+            'haeuser',
             'wohnungen',
         ]
 
         acquisition_types = [
             'mieten',
-            # 'kaufen',
+            'kaufen',
         ]
 
         states = [
@@ -32,7 +35,7 @@ class ImmoweltSpider(scrapy.Spider):
             # 'bayern',
             # 'berlin',
             # 'brandenburg',
-            'bremen',
+            # 'bremen',
             # 'hamburg',
             # 'hessen',
             # 'mecklenburg-vorpommern',
@@ -45,6 +48,11 @@ class ImmoweltSpider(scrapy.Spider):
             # 'schleswig-holstein',
             # 'thueringen'
         ]
+
+        # If not bundesland argument not null then append it to states array
+        if self.bundesland:
+            state_name = self.bundesland
+            states.append(state_name)
 
         # Format: day month year - hour minute second
         # Example format will be 22112021-110500
