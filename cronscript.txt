@@ -1,67 +1,67 @@
-0 6 * * * cd /home/dwhpitch/dwh/immonet_script.sh schleswig-holstein >> /home/dwhpitch/dwh/log/immonet-schleswig-holstein.log 2>&1
-5 6 * * * cd /home/dwhpitch/dwh/immonet_script.sh hamburg >> /home/dwhpitch/dwh/log/immonet-hamburg.log 2>&1
-10 6 * * * cd /home/dwhpitch/dwh/immonet_script.sh niedersachsen >> /home/dwhpitch/dwh/log/immonet-niedersachsen.log 2>&1
-15 6 * * * cd /home/dwhpitch/dwh/immonet_script.sh bremen >> /home/dwhpitch/dwh/log/immonet-bremen.log 2>&1
-20 6 * * * cd /home/dwhpitch/dwh/immonet_script.sh nordrhein-westfalen >> /home/dwhpitch/dwh/log/immonet-nordrhein-westfalen.log 2>&1
-25 6 * * * cd /home/dwhpitch/dwh/immonet_script.sh hessen >> /home/dwhpitch/dwh/log/immonet-hessen.log 2>&1
-30 6 * * * cd /home/dwhpitch/dwh/immonet_script.sh rheinland-pfalz >> /home/dwhpitch/dwh/log/immonet-rheinland-pfalz.log 2>&1
-35 6 * * * cd /home/dwhpitch/dwh/immonet_script.sh baden-wuerttemberg >> /home/dwhpitch/dwh/log/immonet-baden-wuerttemberg.log 2>&1
-40 6 * * * cd /home/dwhpitch/dwh/immonet_script.sh bayern >> /home/dwhpitch/dwh/log/immonet-bayern.log 2>&1
-45 6 * * * cd /home/dwhpitch/dwh/immonet_script.sh saarland >> /home/dwhpitch/dwh/log/immonet-saarland.log 2>&1
-50 6 * * * cd /home/dwhpitch/dwh/immonet_script.sh berlin >> /home/dwhpitch/dwh/log/immonet-berlin.log 2>&1
-55 6 * * * cd /home/dwhpitch/dwh/immonet_script.sh brandenburg >> /home/dwhpitch/dwh/log/immonet-brandenburg.log 2>&1
-0 7 * * * cd /home/dwhpitch/dwh/immonet_script.sh mecklenburg-vorpommern >> /home/dwhpitch/dwh/log/immonet-mecklenburg-vorpommern.log 2>&1
-5 7 * * * cd /home/dwhpitch/dwh/immonet_script.sh sachsen >> /home/dwhpitch/dwh/log/immonet-sachsen.log 2>&1
-10 7 * * * cd /home/dwhpitch/dwh/immonet_script.sh sachsen-anhalt >> /home/dwhpitch/dwh/log/immonet-sachsen-anhalt.log 2>&1
-15 7 * * * cd /home/dwhpitch/dwh/immonet_script.sh thueringen >> /home/dwhpitch/dwh/log/immonet-thueringen.log 2>&1
+0 6 * * * /home/dwhpitch/dwh/immonet_script.sh schleswig-holstein >> /home/dwhpitch/dwh/log/immonet-schleswig-holstein.log 2>&1
+5 6 * * * /home/dwhpitch/dwh/immonet_script.sh hamburg >> /home/dwhpitch/dwh/log/immonet-hamburg.log 2>&1
+10 6 * * * /home/dwhpitch/dwh/immonet_script.sh niedersachsen >> /home/dwhpitch/dwh/log/immonet-niedersachsen.log 2>&1
+15 6 * * * /home/dwhpitch/dwh/immonet_script.sh bremen >> /home/dwhpitch/dwh/log/immonet-bremen.log 2>&1
+20 6 * * * /home/dwhpitch/dwh/immonet_script.sh nordrhein-westfalen >> /home/dwhpitch/dwh/log/immonet-nordrhein-westfalen.log 2>&1
+25 6 * * * /home/dwhpitch/dwh/immonet_script.sh hessen >> /home/dwhpitch/dwh/log/immonet-hessen.log 2>&1
+30 6 * * * /home/dwhpitch/dwh/immonet_script.sh rheinland-pfalz >> /home/dwhpitch/dwh/log/immonet-rheinland-pfalz.log 2>&1
+35 6 * * * /home/dwhpitch/dwh/immonet_script.sh baden-wuerttemberg >> /home/dwhpitch/dwh/log/immonet-baden-wuerttemberg.log 2>&1
+40 6 * * * /home/dwhpitch/dwh/immonet_script.sh bayern >> /home/dwhpitch/dwh/log/immonet-bayern.log 2>&1
+45 6 * * * /home/dwhpitch/dwh/immonet_script.sh saarland >> /home/dwhpitch/dwh/log/immonet-saarland.log 2>&1
+50 6 * * * /home/dwhpitch/dwh/immonet_script.sh berlin >> /home/dwhpitch/dwh/log/immonet-berlin.log 2>&1
+55 6 * * * /home/dwhpitch/dwh/immonet_script.sh brandenburg >> /home/dwhpitch/dwh/log/immonet-brandenburg.log 2>&1
+0 7 * * * /home/dwhpitch/dwh/immonet_script.sh mecklenburg-vorpommern >> /home/dwhpitch/dwh/log/immonet-mecklenburg-vorpommern.log 2>&1
+5 7 * * * /home/dwhpitch/dwh/immonet_script.sh sachsen >> /home/dwhpitch/dwh/log/immonet-sachsen.log 2>&1
+10 7 * * * /home/dwhpitch/dwh/immonet_script.sh sachsen-anhalt >> /home/dwhpitch/dwh/log/immonet-sachsen-anhalt.log 2>&1
+15 7 * * * /home/dwhpitch/dwh/immonet_script.sh thueringen >> /home/dwhpitch/dwh/log/immonet-thueringen.log 2>&1
 
-0 22 * * * cd /home/dwhpitch/dwh/immonet_script.sh schleswig-holstein >> /home/dwhpitch/dwh/log/immonet-schleswig-holstein.log 2>&1
-5 22 * * * cd /home/dwhpitch/dwh/immonet_script.sh hamburg >> /home/dwhpitch/dwh/log/immonet-hamburg.log 2>&1
-10 22 * * * cd /home/dwhpitch/dwh/immonet_script.sh niedersachsen >> /home/dwhpitch/dwh/log/immonet-niedersachsen.log 2>&1
-15 22 * * * cd /home/dwhpitch/dwh/immonet_script.sh bremen >> /home/dwhpitch/dwh/log/immonet-bremen.log 2>&1
-20 22 * * * cd /home/dwhpitch/dwh/immonet_script.sh nordrhein-westfalen >> /home/dwhpitch/dwh/log/immonet-nordrhein-westfalen.log 2>&1
-25 22 * * * cd /home/dwhpitch/dwh/immonet_script.sh hessen >> /home/dwhpitch/dwh/log/immonet-hessen.log 2>&1
-30 22 * * * cd /home/dwhpitch/dwh/immonet_script.sh rheinland-pfalz >> /home/dwhpitch/dwh/log/immonet-rheinland-pfalz.log 2>&1
-35 22 * * * cd /home/dwhpitch/dwh/immonet_script.sh baden-wuerttemberg >> /home/dwhpitch/dwh/log/immonet-baden-wuerttemberg.log 2>&1
-40 22 * * * cd /home/dwhpitch/dwh/immonet_script.sh bayern >> /home/dwhpitch/dwh/log/immonet-bayern.log 2>&1
-45 22 * * * cd /home/dwhpitch/dwh/immonet_script.sh saarland >> /home/dwhpitch/dwh/log/immonet-saarland.log 2>&1
-50 22 * * * cd /home/dwhpitch/dwh/immonet_script.sh berlin >> /home/dwhpitch/dwh/log/immonet-berlin.log 2>&1
-55 22 * * * cd /home/dwhpitch/dwh/immonet_script.sh brandenburg >> /home/dwhpitch/dwh/log/immonet-brandenburg.log 2>&1
-0 23 * * * cd /home/dwhpitch/dwh/immonet_script.sh mecklenburg-vorpommern >> /home/dwhpitch/dwh/log/immonet-mecklenburg-vorpommern.log 2>&1
-5 23 * * * cd /home/dwhpitch/dwh/immonet_script.sh sachsen >> /home/dwhpitch/dwh/log/immonet-sachsen.log 2>&1
-10 23 * * * cd /home/dwhpitch/dwh/immonet_script.sh sachsen-anhalt >> /home/dwhpitch/dwh/log/immonet-sachsen-anhalt.log 2>&1
-15 23 * * * cd /home/dwhpitch/dwh/immonet_script.sh thueringen >> /home/dwhpitch/dwh/log/immonet-thueringen.log 2>&1
+0 22 * * * /home/dwhpitch/dwh/immonet_script.sh schleswig-holstein >> /home/dwhpitch/dwh/log/immonet-schleswig-holstein.log 2>&1
+5 22 * * * /home/dwhpitch/dwh/immonet_script.sh hamburg >> /home/dwhpitch/dwh/log/immonet-hamburg.log 2>&1
+10 22 * * * /home/dwhpitch/dwh/immonet_script.sh niedersachsen >> /home/dwhpitch/dwh/log/immonet-niedersachsen.log 2>&1
+15 22 * * * /home/dwhpitch/dwh/immonet_script.sh bremen >> /home/dwhpitch/dwh/log/immonet-bremen.log 2>&1
+20 22 * * * /home/dwhpitch/dwh/immonet_script.sh nordrhein-westfalen >> /home/dwhpitch/dwh/log/immonet-nordrhein-westfalen.log 2>&1
+25 22 * * * /home/dwhpitch/dwh/immonet_script.sh hessen >> /home/dwhpitch/dwh/log/immonet-hessen.log 2>&1
+30 22 * * * /home/dwhpitch/dwh/immonet_script.sh rheinland-pfalz >> /home/dwhpitch/dwh/log/immonet-rheinland-pfalz.log 2>&1
+35 22 * * * /home/dwhpitch/dwh/immonet_script.sh baden-wuerttemberg >> /home/dwhpitch/dwh/log/immonet-baden-wuerttemberg.log 2>&1
+40 22 * * * /home/dwhpitch/dwh/immonet_script.sh bayern >> /home/dwhpitch/dwh/log/immonet-bayern.log 2>&1
+45 22 * * * /home/dwhpitch/dwh/immonet_script.sh saarland >> /home/dwhpitch/dwh/log/immonet-saarland.log 2>&1
+50 22 * * * /home/dwhpitch/dwh/immonet_script.sh berlin >> /home/dwhpitch/dwh/log/immonet-berlin.log 2>&1
+55 22 * * * /home/dwhpitch/dwh/immonet_script.sh brandenburg >> /home/dwhpitch/dwh/log/immonet-brandenburg.log 2>&1
+0 23 * * * /home/dwhpitch/dwh/immonet_script.sh mecklenburg-vorpommern >> /home/dwhpitch/dwh/log/immonet-mecklenburg-vorpommern.log 2>&1
+5 23 * * * /home/dwhpitch/dwh/immonet_script.sh sachsen >> /home/dwhpitch/dwh/log/immonet-sachsen.log 2>&1
+10 23 * * * /home/dwhpitch/dwh/immonet_script.sh sachsen-anhalt >> /home/dwhpitch/dwh/log/immonet-sachsen-anhalt.log 2>&1
+15 23 * * * /home/dwhpitch/dwh/immonet_script.sh thueringen >> /home/dwhpitch/dwh/log/immonet-thueringen.log 2>&1
 
-0 6 * * * cd /home/dwhpitch/dwh/immowelt_script.sh schleswig-holstein >> /home/dwhpitch/dwh/log/immowelt-schleswig-holstein.log 2>&1
-5 6 * * * cd /home/dwhpitch/dwh/immowelt_script.sh hamburg >> /home/dwhpitch/dwh/log/immowelt-hamburg.log 2>&1
-10 6 * * * cd /home/dwhpitch/dwh/immowelt_script.sh niedersachsen >> /home/dwhpitch/dwh/log/immowelt-niedersachsen.log 2>&1
-15 6 * * * cd /home/dwhpitch/dwh/immowelt_script.sh bremen >> /home/dwhpitch/dwh/log/immowelt-bremen.log 2>&1
-20 6 * * * cd /home/dwhpitch/dwh/immowelt_script.sh nordrhein-westfalen >> /home/dwhpitch/dwh/log/immowelt-nordrhein-westfalen.log 2>&1
-25 6 * * * cd /home/dwhpitch/dwh/immowelt_script.sh hessen >> /home/dwhpitch/dwh/log/immowelt-hessen.log 2>&1
-30 6 * * * cd /home/dwhpitch/dwh/immowelt_script.sh rheinland-pfalz >> /home/dwhpitch/dwh/log/immowelt-rheinland-pfalz.log 2>&1
-35 6 * * * cd /home/dwhpitch/dwh/immowelt_script.sh baden-wuerttemberg >> /home/dwhpitch/dwh/log/immowelt-baden-wuerttemberg.log 2>&1
-40 6 * * * cd /home/dwhpitch/dwh/immowelt_script.sh bayern >> /home/dwhpitch/dwh/log/immowelt-bayern.log 2>&1
-45 6 * * * cd /home/dwhpitch/dwh/immowelt_script.sh saarland >> /home/dwhpitch/dwh/log/immowelt-saarland.log 2>&1
-50 6 * * * cd /home/dwhpitch/dwh/immowelt_script.sh berlin >> /home/dwhpitch/dwh/log/immowelt-berlin.log 2>&1
-55 6 * * * cd /home/dwhpitch/dwh/immowelt_script.sh brandenburg >> /home/dwhpitch/dwh/log/immowelt-brandenburg.log 2>&1
-0 7 * * * cd /home/dwhpitch/dwh/immowelt_script.sh mecklenburg-vorpommern >> /home/dwhpitch/dwh/log/immowelt-mecklenburg-vorpommern.log 2>&1
-5 7 * * * cd /home/dwhpitch/dwh/immowelt_script.sh sachsen >> /home/dwhpitch/dwh/log/immowelt-sachsen.log 2>&1
-10 7 * * * cd /home/dwhpitch/dwh/immowelt_script.sh sachsen-anhalt >> /home/dwhpitch/dwh/log/immowelt-sachsen-anhalt.log 2>&1
-15 7 * * * cd /home/dwhpitch/dwh/immowelt_script.sh thueringen >> /home/dwhpitch/dwh/log/immowelt-thueringen.log 2>&1
+0 6 * * * /home/dwhpitch/dwh/immowelt_script.sh schleswig-holstein >> /home/dwhpitch/dwh/log/immowelt-schleswig-holstein.log 2>&1
+5 6 * * * /home/dwhpitch/dwh/immowelt_script.sh hamburg >> /home/dwhpitch/dwh/log/immowelt-hamburg.log 2>&1
+10 6 * * * /home/dwhpitch/dwh/immowelt_script.sh niedersachsen >> /home/dwhpitch/dwh/log/immowelt-niedersachsen.log 2>&1
+15 6 * * * /home/dwhpitch/dwh/immowelt_script.sh bremen >> /home/dwhpitch/dwh/log/immowelt-bremen.log 2>&1
+20 6 * * * /home/dwhpitch/dwh/immowelt_script.sh nordrhein-westfalen >> /home/dwhpitch/dwh/log/immowelt-nordrhein-westfalen.log 2>&1
+25 6 * * * /home/dwhpitch/dwh/immowelt_script.sh hessen >> /home/dwhpitch/dwh/log/immowelt-hessen.log 2>&1
+30 6 * * * /home/dwhpitch/dwh/immowelt_script.sh rheinland-pfalz >> /home/dwhpitch/dwh/log/immowelt-rheinland-pfalz.log 2>&1
+35 6 * * * /home/dwhpitch/dwh/immowelt_script.sh baden-wuerttemberg >> /home/dwhpitch/dwh/log/immowelt-baden-wuerttemberg.log 2>&1
+40 6 * * * /home/dwhpitch/dwh/immowelt_script.sh bayern >> /home/dwhpitch/dwh/log/immowelt-bayern.log 2>&1
+45 6 * * * /home/dwhpitch/dwh/immowelt_script.sh saarland >> /home/dwhpitch/dwh/log/immowelt-saarland.log 2>&1
+50 6 * * * /home/dwhpitch/dwh/immowelt_script.sh berlin >> /home/dwhpitch/dwh/log/immowelt-berlin.log 2>&1
+55 6 * * * /home/dwhpitch/dwh/immowelt_script.sh brandenburg >> /home/dwhpitch/dwh/log/immowelt-brandenburg.log 2>&1
+0 7 * * * /home/dwhpitch/dwh/immowelt_script.sh mecklenburg-vorpommern >> /home/dwhpitch/dwh/log/immowelt-mecklenburg-vorpommern.log 2>&1
+5 7 * * * /home/dwhpitch/dwh/immowelt_script.sh sachsen >> /home/dwhpitch/dwh/log/immowelt-sachsen.log 2>&1
+10 7 * * * /home/dwhpitch/dwh/immowelt_script.sh sachsen-anhalt >> /home/dwhpitch/dwh/log/immowelt-sachsen-anhalt.log 2>&1
+15 7 * * * /home/dwhpitch/dwh/immowelt_script.sh thueringen >> /home/dwhpitch/dwh/log/immowelt-thueringen.log 2>&1
 
-0 22 * * * cd /home/dwhpitch/dwh/immowelt_script.sh schleswig-holstein >> /home/dwhpitch/dwh/log/immowelt-schleswig-holstein.log 2>&1
-5 22 * * * cd /home/dwhpitch/dwh/immowelt_script.sh hamburg >> /home/dwhpitch/dwh/log/immowelt-hamburg.log 2>&1
-10 22 * * * cd /home/dwhpitch/dwh/immowelt_script.sh niedersachsen >> /home/dwhpitch/dwh/log/immowelt-niedersachsen.log 2>&1
-15 22 * * * cd /home/dwhpitch/dwh/immowelt_script.sh bremen >> /home/dwhpitch/dwh/log/immowelt-bremen.log 2>&1
-20 22 * * * cd /home/dwhpitch/dwh/immowelt_script.sh nordrhein-westfalen >> /home/dwhpitch/dwh/log/immowelt-nordrhein-westfalen.log 2>&1
-25 22 * * * cd /home/dwhpitch/dwh/immowelt_script.sh hessen >> /home/dwhpitch/dwh/log/immowelt-hessen.log 2>&1
-30 22 * * * cd /home/dwhpitch/dwh/immowelt_script.sh rheinland-pfalz >> /home/dwhpitch/dwh/log/immowelt-rheinland-pfalz.log 2>&1
-35 22 * * * cd /home/dwhpitch/dwh/immowelt_script.sh baden-wuerttemberg >> /home/dwhpitch/dwh/log/immowelt-baden-wuerttemberg.log 2>&1
-40 22 * * * cd /home/dwhpitch/dwh/immowelt_script.sh bayern >> /home/dwhpitch/dwh/log/immowelt-bayern.log 2>&1
-45 22 * * * cd /home/dwhpitch/dwh/immowelt_script.sh saarland >> /home/dwhpitch/dwh/log/immowelt-saarland.log 2>&1
-50 22 * * * cd /home/dwhpitch/dwh/immowelt_script.sh berlin >> /home/dwhpitch/dwh/log/immowelt-berlin.log 2>&1
-55 22 * * * cd /home/dwhpitch/dwh/immowelt_script.sh brandenburg >> /home/dwhpitch/dwh/log/immowelt-brandenburg.log 2>&1
-0 23 * * * cd /home/dwhpitch/dwh/immowelt_script.sh mecklenburg-vorpommern >> /home/dwhpitch/dwh/log/immowelt-mecklenburg-vorpommern.log 2>&1
-5 23 * * * cd /home/dwhpitch/dwh/immowelt_script.sh sachsen >> /home/dwhpitch/dwh/log/immowelt-sachsen.log 2>&1
-10 23 * * * cd /home/dwhpitch/dwh/immowelt_script.sh sachsen-anhalt >> /home/dwhpitch/dwh/log/immowelt-sachsen-anhalt.log 2>&1
-15 23 * * * cd /home/dwhpitch/dwh/immowelt_script.sh thueringen >> /home/dwhpitch/dwh/log/immowelt-thueringen.log 2>&1
+0 22 * * * /home/dwhpitch/dwh/immowelt_script.sh schleswig-holstein >> /home/dwhpitch/dwh/log/immowelt-schleswig-holstein.log 2>&1
+5 22 * * * /home/dwhpitch/dwh/immowelt_script.sh hamburg >> /home/dwhpitch/dwh/log/immowelt-hamburg.log 2>&1
+10 22 * * * /home/dwhpitch/dwh/immowelt_script.sh niedersachsen >> /home/dwhpitch/dwh/log/immowelt-niedersachsen.log 2>&1
+15 22 * * * /home/dwhpitch/dwh/immowelt_script.sh bremen >> /home/dwhpitch/dwh/log/immowelt-bremen.log 2>&1
+20 22 * * * /home/dwhpitch/dwh/immowelt_script.sh nordrhein-westfalen >> /home/dwhpitch/dwh/log/immowelt-nordrhein-westfalen.log 2>&1
+25 22 * * * /home/dwhpitch/dwh/immowelt_script.sh hessen >> /home/dwhpitch/dwh/log/immowelt-hessen.log 2>&1
+30 22 * * * /home/dwhpitch/dwh/immowelt_script.sh rheinland-pfalz >> /home/dwhpitch/dwh/log/immowelt-rheinland-pfalz.log 2>&1
+35 22 * * * /home/dwhpitch/dwh/immowelt_script.sh baden-wuerttemberg >> /home/dwhpitch/dwh/log/immowelt-baden-wuerttemberg.log 2>&1
+40 22 * * * /home/dwhpitch/dwh/immowelt_script.sh bayern >> /home/dwhpitch/dwh/log/immowelt-bayern.log 2>&1
+45 22 * * * /home/dwhpitch/dwh/immowelt_script.sh saarland >> /home/dwhpitch/dwh/log/immowelt-saarland.log 2>&1
+50 22 * * * /home/dwhpitch/dwh/immowelt_script.sh berlin >> /home/dwhpitch/dwh/log/immowelt-berlin.log 2>&1
+55 22 * * * /home/dwhpitch/dwh/immowelt_script.sh brandenburg >> /home/dwhpitch/dwh/log/immowelt-brandenburg.log 2>&1
+0 23 * * * /home/dwhpitch/dwh/immowelt_script.sh mecklenburg-vorpommern >> /home/dwhpitch/dwh/log/immowelt-mecklenburg-vorpommern.log 2>&1
+5 23 * * * /home/dwhpitch/dwh/immowelt_script.sh sachsen >> /home/dwhpitch/dwh/log/immowelt-sachsen.log 2>&1
+10 23 * * * /home/dwhpitch/dwh/immowelt_script.sh sachsen-anhalt >> /home/dwhpitch/dwh/log/immowelt-sachsen-anhalt.log 2>&1
+15 23 * * * /home/dwhpitch/dwh/immowelt_script.sh thueringen >> /home/dwhpitch/dwh/log/immowelt-thueringen.log 2>&1
