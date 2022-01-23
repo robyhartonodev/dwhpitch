@@ -19,6 +19,7 @@ services:
     image: scrapinghub/splash
     ports:
       - "${SPLASH_HOST}:8050:8050"
+    restart: always
 
 volumes:
   dwh-data:
