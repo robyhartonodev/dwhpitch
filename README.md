@@ -98,3 +98,9 @@ The automation of the ETL processes is done with the help of the cron jobs. Due 
 This command will dump all relevant tables. (with prefix immobilien_)
 
 ``docker exec <container_name> pg_dump -p 5432 --username=<username> -t 'immobilien_*' dwh_database > dwhpitch_immobilien_dump.sql``
+
+## Check if cron jobs are running
+
+This command will check status of the running cron jobs.
+
+``pstree -apl `pidof cron` ``
