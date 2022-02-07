@@ -1,6 +1,6 @@
 # DWH - Pitch
 
-This repository contains the pitch(es) for the Datenwarehouse module.
+This repository contains the pitch for the Datenwarehouse module by Roby Hartono.
 
 # How to run 
 
@@ -14,7 +14,6 @@ This repository contains the pitch(es) for the Datenwarehouse module.
 
 # Directory structure
 
-- ``html`` - where the raw html data are being stored.
 - ``scrapper`` - is a scrappy project for web scrapping process.
 - ``immobilien`` - is a django startproject application. Where models and migrations being defined.
 
@@ -104,3 +103,7 @@ This command will dump all relevant tables. (with prefix immobilien_)
 This command will check status of the running cron jobs.
 
 ``pstree -apl `pidof cron` ``
+
+# Deployment (Optional)
+
+The application is being deployed per documentation with Gunicorn pure-Python WSGI server for UNIX [here](https://docs.djangoproject.com/en/3.2/howto/deployment/wsgi/gunicorn/). The purpose is to get the django admin panel, which is useful to query certain things.
